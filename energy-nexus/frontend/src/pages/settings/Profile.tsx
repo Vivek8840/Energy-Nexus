@@ -1,89 +1,155 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 
-const Profile: React.FC = React.memo(() => {
-  const [name, setName] = useState('');
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    // Cleanup preview URL when component unmounts or profilePicture changes
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
-  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  }, []);
-
-  const handleProfilePictureChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setProfilePicture(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  }, []);
-
-  const handleSave = useCallback(() => {
-    setIsSaving(true);
-    // Simulate save delay to avoid blinking by disabling button during save
-    setTimeout(() => {
-      setIsSaving(false);
-      alert('Profile saved successfully!');
-    }, 1000);
-  }, []);
-
+const Profile: React.FC = () => {
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h1 className="text-3xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Profile Settings</h1>
-      <div className="mb-6">
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Name
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={handleNameChange}
-          placeholder="Enter your name"
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
-          disabled={isSaving}
-        />
+    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-8">
+      <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-8">
+        Profile Settings
+      </h1>
+
+      {/* User Avatar & Name */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">User Profile</h2>
+        <div className="flex items-center space-x-6">
+          <div>
+            <div className="w-32 h-32 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 text-4xl font-bold">
+              U
+            </div>
+            <input
+              id="profilePicture"
+              type="file"
+              accept="image/*"
+              className="mt-4 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300 dark:hover:file:bg-green-800"
+            />
+          </div>
+          <div className="flex-1">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Full Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Enter your full name"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+        </div>
       </div>
-      <div className="mb-6">
-        <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Profile Picture
-        </label>
-        <input
-          id="profilePicture"
-          type="file"
-          accept="image/*"
-          onChange={handleProfilePictureChange}
-          className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300 dark:hover:file:bg-green-800"
-          disabled={isSaving}
-        />
-        {previewUrl && (
-          <img
-            src={previewUrl}
-            alt="Profile Preview"
-            className="mt-4 w-32 h-32 rounded-full object-cover border border-gray-300 dark:border-gray-600"
-          />
-        )}
+
+      {/* My Impact Summary */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">My Impact</h2>
+        <div className="grid grid-cols-3 gap-6 text-center">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+              ₹12345.67
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Total Earnings</p>
+          </div>
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+              ₹8901.23
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Total Savings</p>
+          </div>
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+              456.78 kg
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">CO2 Reduced</p>
+          </div>
+        </div>
       </div>
-      <button
-        onClick={handleSave}
-        disabled={isSaving}
-        className={`px-6 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
-          isSaving ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'
-        }`}
-      >
-        {isSaving ? 'Saving...' : 'Save Changes'}
-      </button>
+
+      {/* Account Information */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Account Information</h2>
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Phone Number
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+          <div>
+            <button className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+              Change Password
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Linked Devices */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Linked Devices</h2>
+        <ul className="space-y-2">
+          <li className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 py-2">
+            <span className="text-gray-900 dark:text-gray-100">Device-001</span>
+            <span className="px-2 py-1 rounded text-xs font-semibold bg-green-200 text-green-800">
+              Connected
+            </span>
+          </li>
+          <li className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 py-2">
+            <span className="text-gray-900 dark:text-gray-100">Device-002</span>
+            <span className="px-2 py-1 rounded text-xs font-semibold bg-red-200 text-red-800">
+              Offline
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      {/* Wallet & Payouts */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Wallet & Payouts</h2>
+        <p className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Current Balance: ₹0.00</p>
+        <h3 className="text-md font-semibold mb-2 text-gray-900 dark:text-gray-100">Linked Bank Accounts</h3>
+        <ul className="space-y-2 mb-4">
+          <li className="border-b border-gray-200 dark:border-gray-700 py-2 text-gray-900 dark:text-gray-100">
+            No bank accounts linked
+          </li>
+        </ul>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Recent Activity</h2>
+        <ul className="space-y-2">
+          <li className="border-b border-gray-200 dark:border-gray-700 py-2 flex justify-between items-center">
+            <span className="text-gray-900 dark:text-gray-100">No recent transactions</span>
+            <span className="text-gray-600 dark:text-gray-400">-</span>
+            <a
+              href="/blockchain-transparency-hub"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-600 dark:text-green-400 hover:underline ml-4"
+            >
+              View Details
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div className="flex justify-end">
+        <button className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+          Save Changes
+        </button>
+      </div>
     </div>
   );
-});
+};
 
 export default Profile;

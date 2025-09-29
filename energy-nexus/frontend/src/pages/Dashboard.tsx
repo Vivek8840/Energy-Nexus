@@ -24,6 +24,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useEnergy } from '@/contexts/EnergyContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { locationService, LocationData } from '@/services/locationService';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import PredictionChart from '@/components/dashboard/PredictionChart';
 import EnergyFlowChart from '@/components/dashboard/EnergyFlowChart';
@@ -46,6 +47,7 @@ const Dashboard: React.FC = () => {
   const [buyAmount, setBuyAmount] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
 
   // Use energyData from context or fallback to default values
   const realTimeData = {
@@ -59,6 +61,14 @@ const Dashboard: React.FC = () => {
     gridPrice: 3.20,  // static fallback
     carbonSaved: 2.8  // static fallback
   };
+
+  // Fetch location data on component mount
+  useEffect(() => {
+    if (authState.user?.pincode) {
+      const location = locationService.getLocationByPincode(authState.user.pincode);
+      setLocationData(location);
+    }
+  }, [authState.user?.pincode]);
 
   // Removed setInterval for realTimeData updates to prevent flickering
 
@@ -228,7 +238,43 @@ const Dashboard: React.FC = () => {
     </motion.div>
   );
 
-  const ConsumerView = () => (
+  const ConsumerView = () => {
+    // Location-based customization
+    const locationBasedSellers = locationData ? [
+      {
+        name: `${locationData.city} Solar Co-op`,
+        rating: 4.9,
+        location: `${locationData.city}, ${locationData.state}`
+      },
+      {
+        name: `${locationData.district} Green Energy`,
+        rating: 4.7,
+        location: `${locationData.district}, ${locationData.state}`
+      },
+      {
+        name: "Regional Solar Farm",
+        rating: 4.8,
+        location: `${locationData.state} Region`
+      }
+    ] : [
+      {
+        name: "Rajesh Solar Farm",
+        rating: 4.8,
+        location: "Mumbai, Maharashtra"
+      },
+      {
+        name: "Green Energy Co-op",
+        rating: 4.9,
+        location: "Delhi, NCR"
+      },
+      {
+        name: "SunPower Solutions",
+        rating: 4.7,
+        location: "Bangalore, Karnataka"
+      }
+    ];
+
+    return (
     <motion.div
       className="space-y-8 relative"
       initial={{ opacity: 0 }}
@@ -499,48 +545,19 @@ const Dashboard: React.FC = () => {
       >
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Available Energy Listings</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <MarketplaceCard
-            seller={{
-              name: "Rajesh Solar Farm",
-              rating: 4.8,
-              location: "Mumbai, Maharashtra"
-            }}
-            energy={{
-              amount: 25,
-              pricePerKwh: 4.25,
-              totalPrice: 106.25
-            }}
-            timeRemaining="2h 30m"
-            distance="2.5 km"
-          />
-          <MarketplaceCard
-            seller={{
-              name: "Green Energy Co-op",
-              rating: 4.9,
-              location: "Delhi, NCR"
-            }}
-            energy={{
-              amount: 50,
-              pricePerKwh: 3.95,
-              totalPrice: 197.5
-            }}
-            timeRemaining="4h 15m"
-            distance="5.2 km"
-          />
-          <MarketplaceCard
-            seller={{
-              name: "SunPower Solutions",
-              rating: 4.7,
-              location: "Bangalore, Karnataka"
-            }}
-            energy={{
-              amount: 30,
-              pricePerKwh: 4.10,
-              totalPrice: 123
-            }}
-            timeRemaining="1h 45m"
-            distance="3.8 km"
-          />
+          {locationBasedSellers.map((seller, index) => (
+            <MarketplaceCard
+              key={index}
+              seller={seller}
+              energy={{
+                amount: 25 + index * 5, // Vary amounts: 25, 30, 35
+                pricePerKwh: 4.25 - index * 0.15, // Vary prices: 4.25, 4.10, 3.95
+                totalPrice: (25 + index * 5) * (4.25 - index * 0.15)
+              }}
+              timeRemaining={`${2 + index}h ${30 - index * 15}m`}
+              distance={`${2.5 + index * 0.7} km`}
+            />
+          ))}
         </div>
         <div className="text-center mt-6">
           <Link to="/app/marketplace" className="btn-primary">
@@ -675,7 +692,8 @@ const Dashboard: React.FC = () => {
         )}
       </AnimatePresence>
     </motion.div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 lg:pb-6">

@@ -33,3 +33,14 @@ export interface EnergyData {
   todayEarnings?: number;
   todayCarbonOffset?: number;
 }
+
+export interface Device {
+  deviceId: string;
+  connectionStatus: 'Connected' | 'Offline' | 'Unknown';
+}
+
+export interface ImpactSummary {
+  totalEarnings: number;
+  totalSavings: number;
+  co2Reduced: number;
+}

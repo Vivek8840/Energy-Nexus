@@ -214,7 +214,7 @@ const Settings: React.FC = () => {
 
   const ProfileSection = () => (
     <Card>
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+      <div>
         <div className="flex items-center gap-3 mb-6">
           <User className="w-6 h-6 text-green-600" />
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Profile Information</h3>
@@ -241,7 +241,6 @@ const Settings: React.FC = () => {
               className="hidden" 
             />
           </label>
-          <motion.span className="absolute -inset-1 rounded-full" aria-hidden initial={{ boxShadow: '0 0 0 rgba(34,197,94,0)' }} animate={{ boxShadow: '0 0 28px rgba(34,197,94,0.35)' }} transition={{ duration: 1.2, repeat: Infinity, repeatType: 'mirror' }} style={{ pointerEvents: 'none' }} />
         </div>
         <div>
           <h4 className="font-semibold text-gray-900 dark:text-gray-100">{userProfile.fullName}</h4>
@@ -284,7 +283,7 @@ const Settings: React.FC = () => {
           </Button>
         </div>
       </div>
-      </motion.div>
+      </div>
     </Card>
   );
 
@@ -663,18 +662,16 @@ const Settings: React.FC = () => {
             </nav>
           </Card>
           <div className="lg:col-span-3">
-            <AnimatePresence mode="wait">
-              <motion.div key={activeSection} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-                {activeSection === 'profile' && <ProfileSection />}
-                {activeSection === 'system' && <SystemSection />}
-                {activeSection === 'notifications' && <NotificationsSection />}
-                {activeSection === 'security' && <SecuritySection />}
-                {activeSection === 'language' && <LanguageSection />}
-                {activeSection === 'achievements' && <AchievementsSection />}
-                {activeSection === 'support' && <SupportSection />}
-                {activeSection === 'legal' && <LegalSection />}
-              </motion.div>
-            </AnimatePresence>
+            <>
+              {activeSection === 'profile' && <ProfileSection />}
+              {activeSection === 'system' && <SystemSection />}
+              {activeSection === 'notifications' && <NotificationsSection />}
+              {activeSection === 'security' && <SecuritySection />}
+              {activeSection === 'language' && <LanguageSection />}
+              {activeSection === 'achievements' && <AchievementsSection />}
+              {activeSection === 'support' && <SupportSection />}
+              {activeSection === 'legal' && <LegalSection />}
+            </>
           </div>
         </div>
         {showChangePassword && (

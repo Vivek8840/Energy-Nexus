@@ -17,7 +17,9 @@ import {
   Play,
   Check,
   Moon,
-  Monitor
+  Monitor,
+  ChevronDown,
+  Globe
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -29,6 +31,7 @@ const LandingPage: React.FC = () => {
   const { t, currentLanguage, availableLanguages, changeLanguage } = useLanguage();
   const { theme, setTheme, actualTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'existing' | 'planning'>('existing');
+  const [showLanguageMenu, setShowLanguageMenu] = useState<boolean>(false);
   const [calculatorData, setCalculatorData] = useState({
     location: '',
     billAmount: '',
@@ -56,6 +59,21 @@ const LandingPage: React.FC = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Close language menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.language-dropdown')) {
+        setShowLanguageMenu(false);
+      }
+    };
+
+    if (showLanguageMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showLanguageMenu]);
 
   const calculateResults = () => {
     if (activeTab === 'existing') {
@@ -90,10 +108,30 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[radial-gradient(1200px_600px_at_-10%_-10%,rgba(34,197,94,0.15),transparent),radial-gradient(900px_500px_at_110%_10%,rgba(59,130,246,0.12),transparent)]">
-      {/* Decorative Orbs */}
-      <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-green-400/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-[32rem] h-[32rem] rounded-full bg-blue-400/20 blur-3xl" />
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950">
+      {/* Enhanced Background Layers */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50/40 via-transparent to-teal-50/40 dark:from-emerald-950/20 dark:via-transparent dark:to-teal-950/20" />
+      <div className="absolute inset-0 bg-gradient-to-bl from-violet-50/30 via-transparent to-purple-50/30 dark:from-violet-950/15 dark:via-transparent dark:to-purple-950/15" />
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-50/20 via-transparent to-blue-50/20 dark:from-cyan-950/10 dark:via-transparent dark:to-blue-950/10" />
+
+      {/* Enhanced Decorative Elements */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full bg-gradient-to-br from-emerald-400/30 via-teal-400/20 to-cyan-400/30 blur-3xl animate-pulse" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[45rem] h-[45rem] rounded-full bg-gradient-to-tl from-violet-400/25 via-purple-400/20 to-indigo-400/30 blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] rounded-full bg-gradient-to-r from-amber-300/15 via-yellow-300/10 to-orange-300/15 blur-3xl animate-pulse" style={{ animationDelay: '4s' }} />
+      <div className="pointer-events-none absolute top-1/4 right-1/4 w-[25rem] h-[25rem] rounded-full bg-gradient-to-br from-rose-300/20 via-pink-300/15 to-fuchsia-300/20 blur-3xl animate-pulse" style={{ animationDelay: '6s' }} />
+      <div className="pointer-events-none absolute bottom-1/4 left-1/4 w-[35rem] h-[35rem] rounded-full bg-gradient-to-tr from-lime-300/15 via-green-300/10 to-emerald-300/15 blur-3xl animate-pulse" style={{ animationDelay: '8s' }} />
+
+      {/* Floating particles */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-20 left-20 w-2 h-2 bg-emerald-400 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }} />
+        <div className="absolute top-40 right-32 w-1 h-1 bg-blue-400 rounded-full opacity-40 animate-bounce" style={{ animationDelay: '1s', animationDuration: '4s' }} />
+        <div className="absolute bottom-32 left-40 w-1.5 h-1.5 bg-purple-400 rounded-full opacity-50 animate-bounce" style={{ animationDelay: '2s', animationDuration: '3.5s' }} />
+        <div className="absolute top-60 right-20 w-1 h-1 bg-indigo-400 rounded-full opacity-45 animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '4.5s' }} />
+        <div className="absolute top-1/3 left-1/3 w-1 h-1 bg-rose-400 rounded-full opacity-35 animate-bounce" style={{ animationDelay: '3s', animationDuration: '4.2s' }} />
+        <div className="absolute bottom-1/3 right-1/3 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-40 animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '3.8s' }} />
+        <div className="absolute top-2/3 left-10 w-1 h-1 bg-amber-400 rounded-full opacity-50 animate-bounce" style={{ animationDelay: '2.5s', animationDuration: '4.5s' }} />
+        <div className="absolute bottom-10 right-10 w-1 h-1 bg-lime-400 rounded-full opacity-45 animate-bounce" style={{ animationDelay: '0.8s', animationDuration: '3.2s' }} />
+      </div>
       <nav className="bg-[var(--nav-bg)]/90 backdrop-blur-xl border-b border-[var(--border-color)] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -113,19 +151,56 @@ const LandingPage: React.FC = () => {
                 <SunMoonToggle />
 
                 {/* Language Dropdown */}
-                <div className="relative">
-                  <select
+                <div className="relative language-dropdown">
+                  <button
+                    onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 dark:bg-gray-800/50 dark:hover:bg-gray-700/50 backdrop-blur-sm border border-white/20 dark:border-gray-600/50 transition-all duration-200 text-sm"
                     aria-label="Select language"
-                    className="appearance-none pl-3 pr-8 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-200 cursor-pointer"
-                    value={currentLanguage}
-                    onChange={(e) => changeLanguage(e.target.value)}
                   >
-                    {availableLanguages?.map((lng) => (
-                      <option key={lng.code} value={lng.code}>
-                        {lng.label}
-                      </option>
-                    ))}
-                  </select>
+                    <Globe className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                    <span className="text-gray-700 dark:text-gray-200 font-medium">
+                      {availableLanguages?.find(lang => lang.code === currentLanguage)?.name || 'English'}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showLanguageMenu ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {showLanguageMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50 backdrop-blur-lg"
+                    >
+                      {availableLanguages?.map((language) => (
+                        <button
+                          key={language.code}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            changeLanguage(language.code);
+                            setShowLanguageMenu(false);
+                          }}
+                          className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 rounded-lg mx-1 ${
+                            currentLanguage === language.code
+                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          <span className="text-lg">{language.flag}</span>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{language.nativeName}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{language.name}</p>
+                          </div>
+                          {currentLanguage === language.code && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="w-2 h-2 bg-blue-500 rounded-full"
+                            />
+                          )}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
                 </div>
               </div>
 
@@ -139,25 +214,40 @@ const LandingPage: React.FC = () => {
         </div>
       </nav>
 
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 opacity-60">
-          <div className="absolute left-1/2 top-16 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-primary-200/30 to-secondary-200/30 blur-3xl" />
+      <section className="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-24">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-16 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-gradient-to-br from-emerald-300/20 via-teal-300/15 to-cyan-300/20 blur-3xl" />
+          <div className="absolute right-0 top-32 w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-violet-300/15 via-purple-300/10 to-indigo-300/15 blur-3xl" />
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="space-y-8"
+              className="space-y-10"
             >
-              <div>
-                <h1 className="text-4xl lg:text-6xl font-extrabold text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
-                  Turn Your Sunlight
-                  <span className="gradient-text block">Into Profit</span>
+              <div className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm font-medium"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  India's #1 Solar Trading Platform
+                </motion.div>
+                <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight">
+                  <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-slate-100 dark:via-blue-100 dark:to-indigo-100 bg-clip-text text-transparent">
+                    Turn Your Sunlight
+                  </span>
+                  <br />
+                  <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent font-black">
+                    Into Profit
+                  </span>
                 </h1>
-                <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-400 mt-6 leading-relaxed">
-                  India’s eco‑futuristic P2P solar marketplace. Generate, trade, and earn with beautiful insights and fair pricing.
+                <p className="text-xl lg:text-2xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
+                  India's most advanced P2P solar marketplace. Generate, trade, and earn with AI-powered insights and competitive pricing.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -254,14 +344,37 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <section id="calculator" className="py-16 lg:py-24 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              Calculate Your Solar Potential
+      <section id="calculator" className="py-20 lg:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-gray-900 dark:to-blue-950" />
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-100/10 to-transparent" />
+        </div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-emerald-200/20 to-teal-200/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-tl from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200 text-sm font-medium mb-6"
+            >
+              <Calculator className="w-4 h-4 mr-2" />
+              Solar Calculator
+            </motion.div>
+            <h2 className="text-4xl lg:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-slate-100 dark:via-blue-100 dark:to-indigo-100 bg-clip-text text-transparent">
+                Calculate Your
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                Solar Potential
+              </span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              Discover how much you can save and earn with solar energy
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Discover exactly how much you can save and earn with solar energy in your location
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
@@ -342,14 +455,57 @@ const LandingPage: React.FC = () => {
                       <select
                         value={calculatorData.state}
                         onChange={(e) => setCalculatorData(prev => ({ ...prev, state: e.target.value }))}
-                        className="input"
+                        className="input bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-700 focus:border-blue-400 dark:focus:border-blue-500 transition-all duration-300"
                       >
                         <option value="">Select State</option>
-                        <option value="maharashtra">Maharashtra</option>
-                        <option value="gujarat">Gujarat</option>
-                        <option value="rajasthan">Rajasthan</option>
-                        <option value="karnataka">Karnataka</option>
-                        <option value="tamilnadu">Tamil Nadu</option>
+                        <optgroup label="Northern States">
+                          <option value="jammu-kashmir">Jammu and Kashmir</option>
+                          <option value="himachal-pradesh">Himachal Pradesh</option>
+                          <option value="punjab">Punjab</option>
+                          <option value="haryana">Haryana</option>
+                          <option value="uttarakhand">Uttarakhand</option>
+                          <option value="uttar-pradesh">Uttar Pradesh</option>
+                          <option value="rajasthan">Rajasthan</option>
+                          <option value="delhi">Delhi</option>
+                        </optgroup>
+                        <optgroup label="Western States">
+                          <option value="gujarat">Gujarat</option>
+                          <option value="maharashtra">Maharashtra</option>
+                          <option value="goa">Goa</option>
+                        </optgroup>
+                        <optgroup label="Southern States">
+                          <option value="karnataka">Karnataka</option>
+                          <option value="kerala">Kerala</option>
+                          <option value="tamil-nadu">Tamil Nadu</option>
+                          <option value="telangana">Telangana</option>
+                          <option value="andhra-pradesh">Andhra Pradesh</option>
+                        </optgroup>
+                        <optgroup label="Eastern States">
+                          <option value="west-bengal">West Bengal</option>
+                          <option value="odisha">Odisha</option>
+                          <option value="jharkhand">Jharkhand</option>
+                          <option value="bihar">Bihar</option>
+                          <option value="sikkim">Sikkim</option>
+                          <option value="assam">Assam</option>
+                          <option value="arunachal-pradesh">Arunachal Pradesh</option>
+                          <option value="manipur">Manipur</option>
+                          <option value="meghalaya">Meghalaya</option>
+                          <option value="mizoram">Mizoram</option>
+                          <option value="nagaland">Nagaland</option>
+                          <option value="tripura">Tripura</option>
+                        </optgroup>
+                        <optgroup label="Central States">
+                          <option value="madhya-pradesh">Madhya Pradesh</option>
+                          <option value="chhattisgarh">Chhattisgarh</option>
+                        </optgroup>
+                        <optgroup label="Union Territories">
+                          <option value="chandigarh">Chandigarh</option>
+                          <option value="puducherry">Puducherry</option>
+                          <option value="ladakh">Ladakh</option>
+                          <option value="lakshadweep">Lakshadweep</option>
+                          <option value="daman-diu">Daman and Diu</option>
+                          <option value="dadra-nagar-haveli">Dadra and Nagar Haveli</option>
+                        </optgroup>
                       </select>
                     </div>
                     <div>

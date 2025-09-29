@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, 
-  Phone, 
-  Mail, 
-  Lock, 
-  MapPin, 
-  Eye, 
-  EyeOff, 
+import {
+  User,
+  Phone,
+  Mail,
+  Lock,
+  MapPin,
+  Eye,
+  EyeOff,
   Zap,
   Check,
-  X,
   AlertCircle,
   Shield,
   ArrowRight
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { authService } from '@/services/authService';
 
 interface FormData {
   fullName: string;
@@ -48,9 +48,6 @@ const SignUp: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [otpVerified, setOtpVerified] = useState(false);
 
   const getPasswordStrength = (password: string) => {
     let strength = 0;
@@ -133,67 +130,37 @@ const SignUp: React.FC = () => {
     }
   };
 
-  const handleSendOtp = async () => {
+  const handleSignUp = async () => {
     if (!validateStep2()) return;
 
     setIsLoading(true);
     try {
-      // Simulate OTP sending
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setOtpSent(true);
-      setStep(3);
-    } catch (error) {
-      setErrors({ submit: 'Failed to send OTP. Please try again.' });
+      // Call backend signup API
+      await authService.signUp({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        pincode: formData.pincode,
+        language: 'en',
+        agree: formData.agreedToTerms
+      });
+
+      // Auto-login after successful registration
+      await login({
+        identifier: formData.email,
+        password: formData.password
+      });
+
+      navigate('/app/dashboard');
+    } catch (error: any) {
+      setErrors({ submit: error?.message || 'Failed to create account. Please try again.' });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) return;
-    
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
 
-    // Auto-focus next input
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      nextInput?.focus();
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    const otpValue = otp.join('');
-    if (otpValue.length !== 6) {
-      setErrors({ otp: 'Please enter the complete 6-digit OTP' });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // Simulate OTP verification
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-if (otpValue === '884076') { // Demo OTP
-  setOtpVerified(true);
-
-  // Auto-login after successful registration
-  await login({
-    identifier: formData.email,
-    password: formData.password
-  });
-
-  navigate('/app/system-linking');
-} else {
-  setErrors({ otp: 'Invalid OTP. Please try again.' });
-}
-    } catch (error) {
-      setErrors({ otp: 'Verification failed. Please try again.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const formatPhoneNumber = (value: string) => {
     const phoneNumber = value.replace(/\D/g, '');
@@ -212,7 +179,7 @@ if (otpValue === '884076') { // Demo OTP
           className="flex items-center justify-center mb-8"
         >
           <div className="flex items-center space-x-2">
-            {[1, 2, 3].map((stepNumber) => (
+            {[1, 2].map((stepNumber) => (
               <div key={stepNumber} className="flex items-center">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
                   step >= stepNumber
@@ -221,7 +188,7 @@ if (otpValue === '884076') { // Demo OTP
                 }`}>
                   {step > stepNumber ? <Check className="w-5 h-5" /> : stepNumber}
                 </div>
-                {stepNumber < 3 && (
+                {stepNumber < 2 && (
                   <div className={`w-8 h-1 ${
                     step > stepNumber ? 'bg-primary-500' : 'bg-gray-200'
                   }`} />
@@ -243,12 +210,10 @@ if (otpValue === '884076') { // Demo OTP
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {step === 1 && 'Create Account'}
             {step === 2 && 'Secure Your Account'}
-            {step === 3 && 'Verify Your Phone'}
           </h1>
           <p className="text-gray-600">
             {step === 1 && 'Enter your personal information'}
             {step === 2 && 'Set your password and location'}
-            {step === 3 && 'Enter the OTP sent to your phone'}
           </p>
         </motion.div>
 
@@ -569,7 +534,7 @@ if (otpValue === '884076') { // Demo OTP
                     Back
                   </button>
                   <button
-                    onClick={handleSendOtp}
+                    onClick={handleSignUp}
                     disabled={isLoading}
                     className="flex-1 btn-primary py-3 disabled:opacity-50 flex items-center justify-center space-x-2"
                   >
@@ -578,7 +543,7 @@ if (otpValue === '884076') { // Demo OTP
                     ) : (
                       <>
                         <Shield className="w-4 h-4" />
-                        <span>Send OTP</span>
+                        <span>Create Account</span>
                       </>
                     )}
                   </button>
@@ -586,80 +551,7 @@ if (otpValue === '884076') { // Demo OTP
               </motion.div>
             )}
 
-            {/* Step 3: OTP Verification */}
-            {step === 3 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-6"
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Phone className="w-8 h-8 text-primary-600" />
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    We've sent a 6-digit code to
-                  </p>
-                  <p className="font-medium text-gray-900">+91 {formData.phone}</p>
-                </div>
 
-                {/* OTP Input */}
-                <div className="flex justify-center space-x-3">
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      id={`otp-${index}`}
-                      type="text"
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      className="w-12 h-12 border-2 border-gray-300 rounded-lg text-center text-lg font-semibold focus:border-primary-500 focus:outline-none"
-                      maxLength={1}
-                    />
-                  ))}
-                </div>
-
-                {errors.otp && (
-                  <p className="text-sm text-red-600 text-center flex items-center justify-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.otp}
-                  </p>
-                )}
-
-                <div className="text-center text-sm text-gray-600">
-                  <p>Didn't receive the code?</p>
-                  <button className="text-primary-600 hover:text-primary-700 font-medium">
-                    Resend OTP
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  <button
-                    onClick={handleVerifyOtp}
-                    disabled={isLoading || otp.join('').length !== 6}
-                    className="w-full btn-primary py-3 disabled:opacity-50 flex items-center justify-center space-x-2"
-                  >
-                    {isLoading ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <span>Verify & Create Account</span>
-                        <Check className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                  
-                  <button
-                    onClick={() => setStep(2)}
-                    className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                  >
-                    Back
-                  </button>
-                </div>
-
-
-              </motion.div>
-            )}
           </AnimatePresence>
         </motion.div>
 
